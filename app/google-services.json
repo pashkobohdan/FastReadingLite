@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "131224300488",
+    "firebase_url": "https://fast-reading-lite.firebaseio.com",
+    "project_id": "fast-reading-lite",
+    "storage_bucket": "fast-reading-lite.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:131224300488:android:b355503ddc5f3f91",
+        "android_client_info": {
+          "package_name": "com.pashkobohdan.fastreadinglite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "131224300488-lmjrqfua3h6k148qoo0gghiss07aqmho.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.pashkobohdan.fastreadinglite",
+            "certificate_hash": "ed0c553aeba94a651f0647ae5408b388ce8b864e"
+          }
+        },
+        {
+          "client_id": "131224300488-054adnmda0ie3u625off06vr8jbu0oq8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6RKINihRBj3-fSLgoZemU6QWtnYZJAxQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "131224300488-054adnmda0ie3u625off06vr8jbu0oq8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

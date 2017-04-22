@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <!--<color name="colorPrimaryDark">#303F9F</color>-->
+    <!--<color name="colorAccent">#FF4081</color>-->
+
+    <color name="colorPrimary">#009688</color>//#3F51B5
+    <color name="colorPrimaryDark">#00796B</color>
+    <color name="colorAccent">#512DA8</color>
+
+
+    <color name="fab_normal">#FF5722</color>
+    <color name="fab_pressed">#e44615</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="green">#00ff00</color>
+
+    <color name="welcome_1">#009662</color>
+    <color name="welcome_2">#002396</color>
+    <color name="welcome_3">#820096</color>
+    <color name="welcome_4">#96003c</color>
+    <color name="welcome_5">#963700</color>
+    <color name="welcome_6">#009662</color>
+
+    <color name="black_semi_transparent">#B2000000</color>
+
+    <color name="word_color_default">#000000</color>
+    <color name="center_letter_color_default">#ff0000</color>
+    <color name="boundary_lines_color_default">#000000</color>
+</resources>
