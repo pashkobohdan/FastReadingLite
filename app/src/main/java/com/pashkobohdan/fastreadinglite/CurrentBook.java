@@ -62,6 +62,7 @@ public class CurrentBook extends AppCompatActivity {
     public static final int DEFAULT_SPEED_MAX_VALUE = 2000;
     public static final int SPEED_MAX_VALUE = 200;
     public static final int REWIND_WORD_DELAY = 100;
+    public static final int SPEED_CHANGING_DELAY = 50;
     public static final int NANOSECONDS_IN_ONE_SECOND = 1000 * 1000 * 1000;
     public static final double MILLISECONDS_IN_ONE_MINUTE = 60000.0;
 
@@ -80,10 +81,11 @@ public class CurrentBook extends AppCompatActivity {
 
     private RelativeLayout readingPanel;
     private TextView topBoundaryLine, bottomBoundaryLine;
-    private TextView currentWordLeftPart, currentWordCenterPart, currentWordRightPart, currentSpeed;
+    private TextView currentWordLeftPart, currentWordCenterPart, currentWordRightPart;
+    //private TextView currentSpeed;
     private TextView newSpeedOnPlaying;
 
-    private ImageButton positionForwardBack, positionBack, positionUp, positionForwardUp;
+    private ImageButton positionForwardBack, positionBack, positionUp, positionForwardUp, speedPlus, speedMinus;
 
     /**
      * Reading help objects
@@ -123,6 +125,7 @@ public class CurrentBook extends AppCompatActivity {
     private AtomicInteger availableWordCount;
     public static final int DEFAULT_AVAILABLE_WORD_COUNT = 2000;
     private RewardedVideoAd mAd;
+    private AlertDialog maxSpeedAlertDialog;
 
 
     @Override
@@ -239,11 +242,14 @@ public class CurrentBook extends AppCompatActivity {
         currentWordLeftPart = (TextView) findViewById(R.id.current_book_left_part);
         currentWordCenterPart = (TextView) findViewById(R.id.current_book_center_part);
         currentWordRightPart = (TextView) findViewById(R.id.current_book_right_part);
-        currentSpeed = (TextView) findViewById(R.id.current_book_current_speed);
+        //currentSpeed = (TextView) findViewById(R.id.current_book_current_speed);
         positionForwardBack = (ImageButton) findViewById(R.id.current_book_speed_forward_back);
         positionBack = (ImageButton) findViewById(R.id.current_book_speed_back);
         positionUp = (ImageButton) findViewById(R.id.current_book_speed_up);
         positionForwardUp = (ImageButton) findViewById(R.id.current_book_speed_forward_up);
+
+        speedPlus = (ImageButton) findViewById(R.id.current_book_speed_plus);
+        speedMinus = (ImageButton) findViewById(R.id.current_book_speed_minus);
 
         topBoundaryLine = (TextView) findViewById(R.id.current_book_top_boundary_line);
         bottomBoundaryLine = (TextView) findViewById(R.id.current_book_bottom_boundary_line);
@@ -406,95 +412,110 @@ public class CurrentBook extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void speedMinus() {
+        if (bookInfo.getCurrentSpeed() <= SPEED_MIN_VALUE) {
+
+            // To Do
+            bookInfo.setCurrentSpeed(SPEED_MIN_VALUE);
+            //currentSpeed.setText(SPEED_MIN_VALUE + "");
+            newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
+
+            return;
+        }
+
+        bookInfo.setCurrentSpeed(bookInfo.getCurrentSpeed() - SPEED_CHANGE_STEP);
+        //currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
+
+        if (currentReadingStatus == ReadingStatus.STATUS_PLAYING) {
+            speedChangingWhenReading = true;
+            lastUserChangingReading = System.nanoTime();
+
+            newSpeedOnPlaying.setVisibility(View.VISIBLE);
+            newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
+            new Handler().postDelayed(() -> {
+                if (System.nanoTime() - lastUserChangingReading > NANOSECONDS_IN_ONE_SECOND) {
+                    newSpeedOnPlaying.setVisibility(View.GONE);
+                    speedChangingWhenReading = false;
+                }
+
+            }, 1000);
+
+            startOfRestartPlaying(RESTART_TIMER_TASK_ONLINE);
+        } else {
+            newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
+        }
+    }
+
+    private void speedPlus() {
+        if (maxSpeedAlertDialog == null) {
+            maxSpeedAlertDialog = new AlertDialog.Builder(this)
+                    .setCancelable(false)
+                    .setTitle(R.string.information)
+                    .setMessage(R.string.read_up_to_2k_pro)
+                    .setPositiveButton(R.string.buy_pro, (dialog, which) -> {
+                        try {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PRO_VERSION_PACKAGE)));
+                        } catch (ActivityNotFoundException anfe) {
+                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + PRO_VERSION_PACKAGE)));
+                        }
+                    })
+                    .setNeutralButton(R.string.cant_buy_pro, (dialog, which) -> {
+                        if (mAd.isLoaded()) {
+                            mAd.show();
+                        }
+                    })
+
+                    .create();
+        }
+
+        if (availableWordCount.get() > 0) {
+            if (bookInfo.getCurrentSpeed() >= DEFAULT_SPEED_MAX_VALUE) {
+                return;
+            }
+        } else {
+            if (bookInfo.getCurrentSpeed() >= SPEED_MAX_VALUE) {
+
+                if (!maxSpeedAlertDialog.isShowing()) {
+                    maxSpeedAlertDialog.show();
+                }
+
+                return;
+            }
+        }
+
+        bookInfo.setCurrentSpeed(bookInfo.getCurrentSpeed() + SPEED_CHANGE_STEP);
+        // currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
+        newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
+
+        if (currentReadingStatus == ReadingStatus.STATUS_PLAYING) {
+            speedChangingWhenReading = true;
+            lastUserChangingReading = System.nanoTime();
+
+            newSpeedOnPlaying.setVisibility(View.VISIBLE);
+            newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
+            new Handler().postDelayed(() -> {
+                if (System.nanoTime() - lastUserChangingReading > NANOSECONDS_IN_ONE_SECOND) {
+                    newSpeedOnPlaying.setVisibility(View.GONE);
+                    speedChangingWhenReading = false;
+                }
+
+            }, 1000);
+
+            startOfRestartPlaying(RESTART_TIMER_TASK_ONLINE);
+        }
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        AlertDialog maxSpeedAlertDialog = new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle(R.string.information)
-                .setMessage(R.string.read_up_to_2k_pro)
-                .setPositiveButton(R.string.buy_pro, (dialog, which) -> {
-                    try {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PRO_VERSION_PACKAGE)));
-                    } catch (ActivityNotFoundException anfe) {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + PRO_VERSION_PACKAGE)));
-                    }
-                })
-                .setNeutralButton(R.string.cant_buy_pro, (dialog, which) -> {
-                    if (mAd.isLoaded()) {
-                        mAd.show();
-                    }
-                })
 
-                .create();
 
         switch (keyCode) {
             case KEYCODE_VOLUME_DOWN:
-                if (bookInfo.getCurrentSpeed() <= SPEED_MIN_VALUE) {
-
-                    // To Do
-                    bookInfo.setCurrentSpeed(SPEED_MIN_VALUE);
-                    currentSpeed.setText(SPEED_MIN_VALUE + "");
-
-                    return true;
-                }
-
-                bookInfo.setCurrentSpeed(bookInfo.getCurrentSpeed() - SPEED_CHANGE_STEP);
-                currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
-
-                if (currentReadingStatus == ReadingStatus.STATUS_PLAYING) {
-                    speedChangingWhenReading = true;
-                    lastUserChangingReading = System.nanoTime();
-
-                    newSpeedOnPlaying.setVisibility(View.VISIBLE);
-                    newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
-                    new Handler().postDelayed(() -> {
-                        if (System.nanoTime() - lastUserChangingReading > NANOSECONDS_IN_ONE_SECOND) {
-                            newSpeedOnPlaying.setVisibility(View.GONE);
-                            speedChangingWhenReading = false;
-                        }
-
-                    }, 1000);
-
-                    startOfRestartPlaying(RESTART_TIMER_TASK_ONLINE);
-                }
-
+                speedMinus();
                 return true;
 
             case KEYCODE_VOLUME_UP:
-                if (availableWordCount.get() > 0) {
-                    if (bookInfo.getCurrentSpeed() >= DEFAULT_SPEED_MAX_VALUE) {
-                        return true;
-                    }
-                } else {
-                    if (bookInfo.getCurrentSpeed() >= SPEED_MAX_VALUE) {
-
-                        if (!maxSpeedAlertDialog.isShowing()) {
-                            maxSpeedAlertDialog.show();
-                        }
-
-                        return true;
-                    }
-                }
-
-                bookInfo.setCurrentSpeed(bookInfo.getCurrentSpeed() + SPEED_CHANGE_STEP);
-                currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
-
-                if (currentReadingStatus == ReadingStatus.STATUS_PLAYING) {
-                    speedChangingWhenReading = true;
-                    lastUserChangingReading = System.nanoTime();
-
-                    newSpeedOnPlaying.setVisibility(View.VISIBLE);
-                    newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
-                    new Handler().postDelayed(() -> {
-                        if (System.nanoTime() - lastUserChangingReading > NANOSECONDS_IN_ONE_SECOND) {
-                            newSpeedOnPlaying.setVisibility(View.GONE);
-                            speedChangingWhenReading = false;
-                        }
-
-                    }, 1000);
-
-                    startOfRestartPlaying(RESTART_TIMER_TASK_ONLINE);
-                }
+                speedPlus();
 
                 return true;
 
@@ -541,7 +562,8 @@ public class CurrentBook extends AppCompatActivity {
 
         setReadingPosition(bookInfo.getCurrentWordNumber());
 
-        currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
+        //currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
+        newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
     }
 
     private void initializeListeners() {
@@ -599,6 +621,12 @@ public class CurrentBook extends AppCompatActivity {
 
             setReadingPosition(position >= bookInfo.getWords().length - 1 ? bookInfo.getWords().length - 1 : position + 1);
         }, REWIND_WORD_DELAY);
+
+
+        ButtonContinuesClickAction.setContinuesClickAction(speedPlus, this::speedPlus, SPEED_CHANGING_DELAY);
+
+        ButtonContinuesClickAction.setContinuesClickAction(speedMinus, this::speedMinus, SPEED_CHANGING_DELAY);
+
 
         currentPositionSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -666,7 +694,7 @@ public class CurrentBook extends AppCompatActivity {
     }
 
     private void refreshAvailableWordCount() {
-        if (bookInfo.getCurrentSpeed() <= SPEED_MAX_VALUE){
+        if (bookInfo.getCurrentSpeed() <= SPEED_MAX_VALUE) {
             return;
         }
 
@@ -681,7 +709,8 @@ public class CurrentBook extends AppCompatActivity {
             //wordCountLeft.setText("");//availableWordCount.get() + ""
 
             bookInfo.setCurrentSpeed(bookInfo.getCurrentSpeed() > SPEED_MAX_VALUE ? SPEED_MAX_VALUE : bookInfo.getCurrentSpeed());
-            currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
+            //currentSpeed.setText(bookInfo.getCurrentSpeed() + "");
+            newSpeedOnPlaying.setText(getResources().getString(R.string.speed) + " : " + bookInfo.getCurrentSpeed());
 
             refreshStatus(ReadingStatus.STATUS_PAUSE);
 
@@ -699,7 +728,7 @@ public class CurrentBook extends AppCompatActivity {
                     .setNeutralButton(R.string.cant_buy_pro, (dialog, which) -> {
                         if (mAd.isLoaded()) {
                             mAd.show();
-                        }else{
+                        } else {
                             availableWordCount.set(0);
                             wordCountLeft.setText(availableWordCount.get() + "");
                         }
@@ -717,6 +746,8 @@ public class CurrentBook extends AppCompatActivity {
 
         switch (currentReadingStatus) {
             case STATUS_PAUSE:
+                newSpeedOnPlaying.setVisibility(View.VISIBLE);
+
                 appBarLayout.setVisibility(View.VISIBLE);
                 topManagePanel.setVisibility(View.VISIBLE);
                 bottomManagePanel.setVisibility(View.VISIBLE);
@@ -724,6 +755,8 @@ public class CurrentBook extends AppCompatActivity {
                 stopPlaying();
                 break;
             case STATUS_PLAYING:
+                newSpeedOnPlaying.setVisibility(View.GONE);
+
                 appBarLayout.setVisibility(View.GONE);
                 topManagePanel.setVisibility(View.GONE);
                 bottomManagePanel.setVisibility(View.GONE);
