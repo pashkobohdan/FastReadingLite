@@ -41,6 +41,7 @@
     <string name="easy_reading">Простое чтение</string>
     <string name="easy_reading_text">Нажмите чтобы начать/поставить на паузу. Нажимайте на кнопки громкости чтобы изменять скорость</string>
     <string name="edit">Редактировать</string>
+    <string name="reward_more_words">Заработать больше слов (+2000)</string>
     <string name="editing_cancel_text">Вы хотить отменить редактирование этой книги ?</string>
     <string name="email_client_not_found">Нету установленных Email клиентов</string>
     <string name="error">Ошибка</string>

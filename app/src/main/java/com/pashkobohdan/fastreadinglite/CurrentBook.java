@@ -420,6 +420,12 @@ public class CurrentBook extends AppCompatActivity {
                     setReadingPosition(lastPositionBeforeRewind);
                 }
                 break;
+
+            case R.id.action_reward_more_words:
+                if(mAd.isLoaded()) {
+                    mAd.show();
+                }
+                break;
         }
 
         return super.onOptionsItemSelected(item);

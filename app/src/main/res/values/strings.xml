@@ -123,6 +123,7 @@
     <string name="book_rewriting_confirm">"Do you want to rewrite this book ? "</string>
     <string name="to_start">To start</string>
     <string name="cancel_last_rewind">Cancel last rewind</string>
+    <string name="reward_more_words">Earn more money (+2k)</string>
     <string name="sort_by_last_opening">Sort by last opening</string>
     <string name="sort_by_progress">Sort by progress</string>
     <string name="sort_by_name">Sort by name</string>
