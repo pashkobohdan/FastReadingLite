@@ -2,7 +2,6 @@ package com.pashkobohdan.fastreadinglite;
 
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -48,7 +47,8 @@ import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
 
 public class CurrentBook extends AppCompatActivity {
-    public static final String REWARD_ADS_ID = "ca-app-pub-3684924583088312/2040544187";//"ca-app-pub-5629629863028147/3889904518";
+    public static final String REWARD_ADS_ID = "ca-app-pub-5629629863028147/2516191553";//"ca-app-pub-5629629863028147/3889904518";
+
 
     public static final String PRO_VERSION_PACKAGE = "com.pashkobohdan.fastreading";
 
@@ -125,6 +125,7 @@ public class CurrentBook extends AppCompatActivity {
     private AtomicInteger availableWordCount;
     public static final int DEFAULT_AVAILABLE_WORD_COUNT = 2000;
     private RewardedVideoAd mAd;
+    private AdRequest mAdRequest;
     private AlertDialog maxSpeedAlertDialog;
 
 
@@ -208,6 +209,8 @@ public class CurrentBook extends AppCompatActivity {
                 Toast.makeText(CurrentBook.this, "Ads loading error. Try later", Toast.LENGTH_SHORT).show();
             }
         });
+        mAdRequest = new AdRequest.Builder()
+                .build();
         loadRewardedVideoAd();
 
 
@@ -227,7 +230,7 @@ public class CurrentBook extends AppCompatActivity {
 
 
     private void loadRewardedVideoAd() {
-        mAd.loadAd(REWARD_ADS_ID, new AdRequest.Builder().build());
+        mAd.loadAd(REWARD_ADS_ID, mAdRequest);
     }
 
     private void findUiElements() {
@@ -265,8 +268,11 @@ public class CurrentBook extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        //mAd.resume(this);
         super.onResume();
+
+        if(mAd != null) {
+            mAd.resume(this);
+        }
 
         if (bookInfo == null) {
             return;
@@ -337,8 +343,11 @@ public class CurrentBook extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        //mAd.pause(this);
         super.onPause();
+
+        if(mAd != null) {
+            mAd.pause(this);
+        }
 
         if (bookInfo == null) {
             return;
@@ -371,8 +380,12 @@ public class CurrentBook extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        //mAd.destroy(this);
         super.onDestroy();
+
+        if(mAd != null) {
+            mAd.destroy(this);
+        }
+
 
         bookInfo.setCurrentWordNumber(readingPosition);
         refreshStatus(ReadingStatus.STATUS_PAUSE);

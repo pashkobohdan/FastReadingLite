@@ -156,23 +156,24 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
          */
         twoStageRate = TwoStageRate.with(this);
         twoStageRate
-                .setInstallDays(3)
-                .setLaunchTimes(5)
-                .setEventsTimes(3)
+                .setConfirmRateDialogDismissible(true)
+                .setInstallDays(5)
+                .setLaunchTimes(10)
+                .setEventsTimes(15)
                 .setFeedbackReceivedListener(feedback -> Toast.makeText(AllBooks.this, feedback, Toast.LENGTH_SHORT).show());
 
-        twoStageRate.setRatePromptTitle(getString(R.string.rate_prompt_title)).
-                setRatePromptDismissible(false).
-                resetOnDismiss(true).
-                resetOnFeedBackDeclined(true).
-                resetOnRatingDeclined(true)
+        twoStageRate.setRatePromptTitle(getString(R.string.rate_prompt_title))
+                .setRatePromptDismissible(true)
+                .resetOnDismiss(false)
+                .resetOnFeedBackDeclined(true)
+                .resetOnRatingDeclined(true)
                 .setShowAppIcon(false);
 
         twoStageRate.setConfirmRateDialogTitle(getString(R.string.confirm_rate_title)).
                 setConfirmRateDialogDescription(getString(R.string.confirm_rate_description)).
                 setConfirmRateDialogPositiveText(getString(R.string.confirm_rate_positive)).
                 setConfirmRateDialogNegativeText(getString(R.string.confirm_rate_negative)).
-                setConfirmRateDialogDismissible(false);
+                setConfirmRateDialogDismissible(true);
 
         twoStageRate.setFeedbackDialogTitle(getString(R.string.feedback_title)).
                 setFeedbackDialogDescription(getString(R.string.feedback_description)).
@@ -408,7 +409,7 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
 //                if (mFirebaseAuth.getCurrentUser() != null) {
 //                    signInSignOut.setTitle(R.string.sign_out);
 //                } else {
-//                    signInSignOut.setTitle(R.string.sign_in);
+    //                    signInSignOut.setTitle(R.string.sign_in);
 //                }
 //            }
 //        } else {
