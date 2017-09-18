@@ -25,8 +25,17 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.util.Attributes;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.honu.aloha.WelcomeHelper;
 import com.morsebyte.shailesh.twostagerating.TwoStageRate;
 import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfo;
@@ -37,6 +46,7 @@ import com.pashkobohdan.fastreadinglite.library.feedback.EmailFeedback;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.file.InternalStorageFileHelper;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.core.BookReadingResult;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpeningThread.FileOpenThread;
+import com.pashkobohdan.fastreadinglite.library.firebase.downloadBooks.FirebaseBook;
 import com.pashkobohdan.fastreadinglite.library.ui.dialogs.BookAddDialog;
 import com.pashkobohdan.fastreadinglite.library.ui.dialogs.BookEditDialog;
 import com.pashkobohdan.fastreadinglite.library.ui.lists.booksList.BooksRecyclerViewAdapter;
@@ -85,11 +95,11 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
     private BooksSortTypes booksSortType = BooksSortTypes.BY_LAST_OPENING;
 
 
-//    private GoogleApiClient mGoogleApiClient;
-//    private FirebaseAuth mFirebaseAuth;
-//
-//    private FirebaseDatabase database;
-//    private DatabaseReference booksReference;
+    private GoogleApiClient mGoogleApiClient;
+    private FirebaseAuth mFirebaseAuth;
+
+    private FirebaseDatabase database;
+    private DatabaseReference booksReference;
 
 
     private TwoStageRate twoStageRate;
@@ -188,25 +198,25 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
         /**
          * Firebase and google init
          */
-        //authorizeInitialize();
+        authorizeInitialize();
 
 
-//        database = FirebaseDatabase.getInstance();
-//        booksReference = database.getReference("books");
+        database = FirebaseDatabase.getInstance();
+        booksReference = database.getReference("books");
     }
 
-//    private void authorizeInitialize() {
-//        mFirebaseAuth = FirebaseAuth.getInstance();
-//
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .build();
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-//                .build();
-//    }
+    private void authorizeInitialize() {
+        mFirebaseAuth = FirebaseAuth.getInstance();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+    }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
@@ -273,15 +283,15 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_all_books, menu);
 
-//        signInSignOut = menu.findItem(R.id.sign_in_or_out);
-//
-//        if (signInSignOut != null) {
-//            if (mFirebaseAuth.getCurrentUser() != null) {
-//                signInSignOut.setTitle(R.string.sign_out);
-//            } else {
-//                signInSignOut.setTitle(R.string.sign_in);
-//            }
-//        }
+        signInSignOut = menu.findItem(R.id.sign_in_or_out);
+
+        if (signInSignOut != null) {
+            if (mFirebaseAuth.getCurrentUser() != null) {
+                signInSignOut.setTitle(R.string.sign_out);
+            } else {
+                signInSignOut.setTitle(R.string.sign_in);
+            }
+        }
 
         return true;
     }
@@ -342,9 +352,9 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
 //                }
 //                break;
 
-//            case R.id.sign_in_or_out:
-//                //signInOrOut();
-//                break;
+            case R.id.sign_in_or_out:
+                signInOrOut();
+                break;
 
 
 //            case R.id.action_help:
@@ -398,67 +408,50 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
 
     private Runnable signInSuccess = null;
 
-//    private void signInOrOut() {
-//        if (mFirebaseAuth.getCurrentUser() != null) {
-//            mFirebaseAuth.signOut();
-//            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
-//
-//            Toast.makeText(this, R.string.sign_out_ok, Toast.LENGTH_SHORT).show();
-//
-//            if (signInSignOut != null) {
-//                if (mFirebaseAuth.getCurrentUser() != null) {
-//                    signInSignOut.setTitle(R.string.sign_out);
-//                } else {
-    //                    signInSignOut.setTitle(R.string.sign_in);
-//                }
-//            }
-//        } else {
-//            Intent authorizeIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-//            startActivityForResult(authorizeIntent, RC_SIGN_IN);
-//        }
-//    }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == RC_SIGN_IN) {
-//            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-//            if (result.isSuccess()) {
-//                GoogleSignInAccount account = result.getSignInAccount();
-//                firebaseAuthWithGoogle(account);
-//
-//            } else {
-//                Toast.makeText(AllBooks.this, R.string.sign_in_error, Toast.LENGTH_SHORT).show();
-//                signInSuccess = null;
-//            }
-//        }
-//    }
+    private void signInOrOut() {
+        if (mFirebaseAuth.getCurrentUser() != null) {
+            mFirebaseAuth.signOut();
+            Auth.GoogleSignInApi.signOut(mGoogleApiClient);
 
-//    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-//        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-//        mFirebaseAuth.signInWithCredential(credential)
-//                .addOnCompleteListener(this, task -> {
-//                    if (!task.isSuccessful()) {
-//                        Toast.makeText(AllBooks.this, R.string.auth_error, Toast.LENGTH_SHORT).show();
-//                        signInSuccess = null;
-//                    } else {
-//                        Toast.makeText(AllBooks.this, R.string.sign_in_ok, Toast.LENGTH_SHORT).show();
-//
-//                        if (signInSignOut != null) {
-//                            if (mFirebaseAuth.getCurrentUser() != null) {
-//                                signInSignOut.setTitle(R.string.sign_out);
-//                            } else {
-//                                signInSignOut.setTitle(R.string.sign_in);
-//                            }
-//                        }
-//
-//                        if (signInSuccess != null) {
-//                            signInSuccess.run();
-//                        }
-//                    }
-//                });
-//    }
+            Toast.makeText(this, R.string.sign_out_ok, Toast.LENGTH_SHORT).show();
+
+            if (signInSignOut != null) {
+                if (mFirebaseAuth.getCurrentUser() != null) {
+                    signInSignOut.setTitle(R.string.sign_out);
+                } else {
+                        signInSignOut.setTitle(R.string.sign_in);
+                }
+            }
+        } else {
+            Intent authorizeIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(authorizeIntent, RC_SIGN_IN);
+        }
+    }
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mFirebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(AllBooks.this, R.string.auth_error, Toast.LENGTH_SHORT).show();
+                        signInSuccess = null;
+                    } else {
+                        Toast.makeText(AllBooks.this, R.string.sign_in_ok, Toast.LENGTH_SHORT).show();
+
+                        if (signInSignOut != null) {
+                            if (mFirebaseAuth.getCurrentUser() != null) {
+                                signInSignOut.setTitle(R.string.sign_out);
+                            } else {
+                                signInSignOut.setTitle(R.string.sign_in);
+                            }
+                        }
+
+                        if (signInSuccess != null) {
+                            signInSuccess.run();
+                        }
+                    }
+                });
+    }
 
 
     /**
@@ -517,23 +510,23 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
             booksFloatingActionsMenu.collapse();
         });
         floatingActionButtonDownloadBook.setOnClickListener(v -> {
-            //tryDownloadBookFromCloud();
-            new AlertDialog.Builder(this)
-                    .setCancelable(false)
-                    .setTitle(R.string.information)
-                    .setMessage(R.string.this_function_available_in_pro_version)
-                    .setPositiveButton(R.string.buy_pro, (dialog, which) -> {
-                        try {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PRO_VERSION_PACKAGE)));
-                        } catch (ActivityNotFoundException anfe) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + PRO_VERSION_PACKAGE)));
-                        }
-                    })
-                    .setNeutralButton(R.string.i_cant_buy_pro, (dialog, which) -> {
-
-                    })
-
-                    .show();
+            tryDownloadBookFromCloud();
+//            new AlertDialog.Builder(this)
+//                    .setCancelable(false)
+//                    .setTitle(R.string.information)
+//                    .setMessage(R.string.this_function_available_in_pro_version)
+//                    .setPositiveButton(R.string.buy_pro, (dialog, which) -> {
+//                        try {
+//                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PRO_VERSION_PACKAGE)));
+//                        } catch (ActivityNotFoundException anfe) {
+//                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + PRO_VERSION_PACKAGE)));
+//                        }
+//                    })
+//                    .setNeutralButton(R.string.i_cant_buy_pro, (dialog, which) -> {
+//
+//                    })
+//
+//                    .show();
 
             booksFloatingActionsMenu.collapse();
         });
@@ -581,37 +574,37 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
             }
 
         }, (bookInfo) -> {
-            new AlertDialog.Builder(this)
-                    .setCancelable(false)
-                    .setTitle(R.string.you_spent_words)
-                    .setMessage(R.string.this_function_available_in_pro_version)
-                    .setPositiveButton(R.string.buy_pro, (dialog, which) -> {
-                        try {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PRO_VERSION_PACKAGE)));
-                        } catch (ActivityNotFoundException anfe) {
-                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + PRO_VERSION_PACKAGE)));
-                        }
-                    })
-                    .setNeutralButton(R.string.i_cant_buy_pro, (dialog, which) -> {
+//            new AlertDialog.Builder(this)
+//                    .setCancelable(false)
+//                    .setTitle(R.string.you_spent_words)
+//                    .setMessage(R.string.this_function_available_in_pro_version)
+//                    .setPositiveButton(R.string.buy_pro, (dialog, which) -> {
+//                        try {
+//                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + PRO_VERSION_PACKAGE)));
+//                        } catch (ActivityNotFoundException anfe) {
+//                            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + PRO_VERSION_PACKAGE)));
+//                        }
+//                    })
+//                    .setNeutralButton(R.string.i_cant_buy_pro, (dialog, which) -> {
+//
+//                    })
+//                    .show();
 
-                    })
-                    .show();
+            if (!checkBookReady(bookInfo)) {
+                return;
+            }
 
-//            if (!checkBookReady(bookInfo)) {
-//                return;
-//            }
-//
-//            FirebaseBook book = new FirebaseBook(bookInfo.getName(), bookInfo.getAuthor(), bookInfo.getAllText());
-//
-//            ProgressDialog progressDialog = new ProgressDialog(this);
-//            progressDialog.setTitle(getString(R.string.dialog_book_upload_title));
-//            progressDialog.setMessage(getString(R.string.dialog_book_upload_text));
-//            progressDialog.show();
-//
-//            booksReference.push().setValue(book, (databaseError, databaseReference) -> {
-//                progressDialog.dismiss();
-//                Toast.makeText(AllBooks.this, R.string.book_upload_success, Toast.LENGTH_SHORT).show();
-//            });
+            FirebaseBook book = new FirebaseBook(bookInfo.getName(), bookInfo.getAuthor(), bookInfo.getAllText());
+
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle(getString(R.string.dialog_book_upload_title));
+            progressDialog.setMessage(getString(R.string.dialog_book_upload_text));
+            progressDialog.show();
+
+            booksReference.push().setValue(book, (databaseError, databaseReference) -> {
+                progressDialog.dismiss();
+                Toast.makeText(AllBooks.this, R.string.book_upload_success, Toast.LENGTH_SHORT).show();
+            });
 
 
         }, (bookInfo, ifConfirmed) -> {
@@ -726,7 +719,18 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
 
+            } else {
+                Toast.makeText(AllBooks.this, R.string.sign_in_error, Toast.LENGTH_SHORT).show();
+                signInSuccess = null;
+            }
+            return;
+        }
         switch (requestCode) {
             case OPEN_PDF_FB2_TXT_FILE:
                 if (resultCode == RESULT_OK) {
@@ -836,17 +840,17 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
     }
 
 
-//    private void tryDownloadBookFromCloud() {
-//        if (mFirebaseAuth.getCurrentUser() != null) {
-//            startActivity(new Intent(this, Download.class));
-//        } else {
-//            signInSuccess = () -> {
-//                startActivity(new Intent(AllBooks.this, Download.class));
-//                signInSuccess = null;
-//            };
-//
-//            signInOrOut();
-//        }
-//    }
+    private void tryDownloadBookFromCloud() {
+        if (mFirebaseAuth.getCurrentUser() != null) {
+            startActivity(new Intent(this, Download.class));
+        } else {
+            signInSuccess = () -> {
+                startActivity(new Intent(AllBooks.this, Download.class));
+                signInSuccess = null;
+            };
+
+            signInOrOut();
+        }
+    }
 
 }

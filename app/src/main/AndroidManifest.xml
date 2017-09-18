@@ -32,7 +32,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings" />
-
+        <activity
+            android:name=".Download"
+            android:label="@string/download_activity_title" />
         <activity android:name=".WelcomeActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
 
