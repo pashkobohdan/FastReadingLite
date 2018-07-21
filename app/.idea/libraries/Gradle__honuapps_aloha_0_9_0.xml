@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: honuapps:aloha-0.9.0">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/honuapps/aloha/0.9.0/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/honuapps/aloha/0.9.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Programs/gradle-4.4/caches/modules-2/files-2.1/honuapps/aloha/0.9.0/7e625dfa8c96e537fb5d995d532c4d3a5f2fdcdd/aloha-0.9.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

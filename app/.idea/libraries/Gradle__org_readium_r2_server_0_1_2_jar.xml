@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.readium:r2-server:0.1.2@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Programs/gradle-4.4/caches/modules-2/files-2.1/org.readium/r2-server/0.1.2/556f9306c287663d3a79aff090a8c1342640fe9a/r2-server-0.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Programs/gradle-4.4/caches/modules-2/files-2.1/org.readium/r2-server/0.1.2/bf31e718cf3622046dde7a28440603ba9282ef00/r2-server-0.1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

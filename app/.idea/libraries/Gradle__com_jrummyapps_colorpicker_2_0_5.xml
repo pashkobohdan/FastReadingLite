@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.jrummyapps:colorpicker-2.0.5">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/com.jrummyapps/colorpicker/2.0.5/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/com.jrummyapps/colorpicker/2.0.5/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Programs/gradle-4.4/caches/modules-2/files-2.1/com.jrummyapps/colorpicker/2.0.5/7dec68158f63b9f35268dc20f811ae6a702b27f0/colorpicker-2.0.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

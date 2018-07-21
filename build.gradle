@@ -19,6 +19,11 @@ allprojects {
     repositories {
         jcenter()
     }
+    repositories {
+        maven {
+            url "http://dl.bintray.com/mobisystech/maven"
+        }
+    }
 }
 
 task clean(type: Delete) {

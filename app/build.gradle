@@ -3,12 +3,18 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
+    repositories {
+        flatDir {
+            dirs "libs"
+        }
+    }
+
     defaultConfig {
         applicationId "com.pashkobohdan.fastreadinglite"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 11
-        versionName "1.2.4"
+        versionCode 15
+        versionName "1.4.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
@@ -26,6 +32,13 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
     }
 }
 
@@ -55,6 +68,12 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     compile 'com.android.support:multidex:1.0.0'
+
+    compile 'com.folioreader:folioreader:0.3.1'
+
+
+    compile 'ru.apperate:ads@aar'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

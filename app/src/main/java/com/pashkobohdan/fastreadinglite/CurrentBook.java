@@ -42,6 +42,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import ru.apperate.ads.InterstitialAd;
+import ru.apperate.ads.delegate.InterstitialAdListener;
+
 import static android.view.KeyEvent.KEYCODE_BACK;
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
@@ -164,6 +167,44 @@ public class CurrentBook extends AppCompatActivity {
         }
 
 
+        InterstitialAd interstitialAd = new InterstitialAd(this);
+        interstitialAd.setInterstitialAdListener(new InterstitialAdListener() {
+            @Override
+            public void onInterstitialLoaded(InterstitialAd interstitialAd) {
+                interstitialAd.show();
+                PreferenceManager.getDefaultSharedPreferences(getBaseContext()).edit().putLong("last_ad_show_time", System.currentTimeMillis()).apply();
+            }
+
+            @Override
+            public void onInterstitialShowed() {
+
+            }
+
+            @Override
+            public void onInterstitialClicked() {
+
+            }
+
+            @Override
+            public void onInterstitialClosed() {
+
+            }
+
+            @Override
+            public void onInterstitialError(Error error) {
+
+            }
+        });
+        long lastAdShowTime = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getLong("last_ad_show_time",0);
+        long miliseconds = System.currentTimeMillis() - lastAdShowTime;
+        long seconds = miliseconds / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        if (hours > 12) {
+            interstitialAd.load();
+        }
+
+
         /**
          *  Here's all right ! (if we're here)
          */
@@ -211,7 +252,6 @@ public class CurrentBook extends AppCompatActivity {
         });
         mAdRequest = new AdRequest.Builder()
                 .build();
-        loadRewardedVideoAd();
 
 
         bookInfo.setLastOpeningDate((int) (new Date().getTime() / 1000));
@@ -270,7 +310,7 @@ public class CurrentBook extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if(mAd != null) {
+        if (mAd != null) {
             mAd.resume(this);
         }
 
@@ -345,7 +385,7 @@ public class CurrentBook extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if(mAd != null) {
+        if (mAd != null) {
             mAd.pause(this);
         }
 
@@ -382,7 +422,7 @@ public class CurrentBook extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(mAd != null) {
+        if (mAd != null) {
             mAd.destroy(this);
         }
 
@@ -422,8 +462,10 @@ public class CurrentBook extends AppCompatActivity {
                 break;
 
             case R.id.action_reward_more_words:
-                if(mAd.isLoaded()) {
+                if (mAd.isLoaded()) {
                     mAd.show();
+                } else {
+                    loadRewardedVideoAd();
                 }
                 break;
         }
@@ -481,6 +523,8 @@ public class CurrentBook extends AppCompatActivity {
                     .setNeutralButton(R.string.cant_buy_pro, (dialog, which) -> {
                         if (mAd.isLoaded()) {
                             mAd.show();
+                        } else {
+                            loadRewardedVideoAd();
                         }
                     })
 
@@ -748,6 +792,7 @@ public class CurrentBook extends AppCompatActivity {
                         if (mAd.isLoaded()) {
                             mAd.show();
                         } else {
+                            loadRewardedVideoAd();
                             availableWordCount.set(0);
                             wordCountLeft.setText(availableWordCount.get() + "");
                         }

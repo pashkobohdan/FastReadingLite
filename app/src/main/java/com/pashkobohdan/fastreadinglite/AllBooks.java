@@ -690,7 +690,7 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
                     FileChooserDialog.Builder openFileBuilder =
                             new FileChooserDialog.Builder(FileChooserDialog.ChooserType.FILE_CHOOSER, this)
                                     .setTitle(getString(R.string.select_file_dialog_title))
-                                    .setFileFormats(new String[]{".txt", ".pdf", ".fb2"});
+                                    .setFileFormats(new String[]{".txt", ".pdf", ".fb2", ".epub"});
                     try {
                         openFileBuilder.build().show(getSupportFragmentManager(), null);
                     } catch (ExternalStorageNotAvailableException e) {
@@ -738,7 +738,8 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
 
                     if (myFile.getAbsolutePath().endsWith("pdf") ||
                             myFile.getAbsolutePath().endsWith("fb2") ||
-                            myFile.getAbsolutePath().endsWith("txt")) {
+                            myFile.getAbsolutePath().endsWith("txt") ||
+                            myFile.getAbsolutePath().endsWith("epub")) {
 
                         selectOpeningFile(myFile);
                     } else {

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.morsebyte.shailesh.twostagerating:TwoStageRate-2.0">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/build/intermediates/exploded-aar/com.morsebyte.shailesh.twostagerating/TwoStageRate/2.0/res" />
+      <root url="jar://$PROJECT_DIR$/build/intermediates/exploded-aar/com.morsebyte.shailesh.twostagerating/TwoStageRate/2.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/Programs/gradle-4.4/caches/modules-2/files-2.1/com.morsebyte.shailesh.twostagerating/TwoStageRate/2.0/e2e53b94149e7b6a82866e635c01c7a16b27eddb/TwoStageRate-2.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

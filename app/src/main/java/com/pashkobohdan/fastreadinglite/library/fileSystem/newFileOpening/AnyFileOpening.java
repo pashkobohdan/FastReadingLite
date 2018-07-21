@@ -9,6 +9,7 @@ import com.pashkobohdan.fastreadinglite.library.fileSystem.file.core.PercentSend
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.core.BookReadingResult;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.core.FileOpen;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.core.FileType;
+import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.implementations.EpubFileOpener;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.implementations.Fb2FileOpener;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.implementations.PdfFileOpener;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.implementations.TxtFileOpener;
@@ -25,6 +26,7 @@ public class AnyFileOpening {
     private static final TxtFileOpener txtFileReaderAndWriter = new TxtFileOpener();
     private static final PdfFileOpener pdfFileReaderAndWriter = new PdfFileOpener();
     private static final Fb2FileOpener fb2FileReaderAndWriter = new Fb2FileOpener();
+    private static final EpubFileOpener epubFileReaderAndWriter = new EpubFileOpener();
 
     private static final FileReadWrite fileReadWrite = new FileReadingAndWriting();
 
@@ -38,6 +40,8 @@ public class AnyFileOpening {
             fileType = FileType.TXT_FILE;
         } else if (file.getName().endsWith(".fb2")) {
             fileType = FileType.FB2_FILE;
+        } else if (file.getName().endsWith(".epub")) {
+            fileType = FileType.UPUB_FILE;
         }
 
         return fileType;
@@ -69,6 +73,9 @@ public class AnyFileOpening {
                 break;
             case FB2_FILE:
                 fileOpen = fb2FileReaderAndWriter;
+                break;
+            case UPUB_FILE:
+                fileOpen = epubFileReaderAndWriter;
                 break;
             default:
                 return null;
