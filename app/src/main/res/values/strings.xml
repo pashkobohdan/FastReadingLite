@@ -94,6 +94,7 @@
     <string name="select_file_dialog_title">Select a file</string>
     <string name="reading_dialog_title">Reading</string>
     <string name="reading_dialog_text">Please, wait while book loading. You can use another apps at this time</string>
+    <string name="migrating_dialog_text">Please, wait while your book will be translated to new database version. Please, do not close application</string>
     <string name="error">Error</string>
     <string name="book_loading_error">Book loading error. Try later</string>
     <string name="ok">OK</string>

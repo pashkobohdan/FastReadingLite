@@ -68,6 +68,7 @@
     <string name="pref_title_vibrate">Вибрация</string>
     <string name="rate_prompt_title">Как вы оцените это приложение ?</string>
     <string name="reading_dialog_text">Пожалуйста, подождите пока книга загружается. Вы можете свернуть приожение на это время</string>
+    <string name="migrating_dialog_text">Пожалуйста, подождите пока книга переводятся в новое хранилище. Не закрывайте приложение</string>
     <string name="reading_dialog_title">Чтение</string>
     <string name="reading_settings">Начтройки чтения</string>
     <string name="reading_settings_text">Отмените последнюю перемотку или начните сначала</string>

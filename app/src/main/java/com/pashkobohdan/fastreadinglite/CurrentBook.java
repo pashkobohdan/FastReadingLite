@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -30,14 +31,14 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.reward.RewardItem;
 import com.google.android.gms.ads.reward.RewardedVideoAd;
 import com.google.android.gms.ads.reward.RewardedVideoAdListener;
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfo;
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfosList;
+import com.pashkobohdan.fastreadinglite.data.database.BookDAOHolder;
+import com.pashkobohdan.fastreadinglite.data.dto.DBBookDTO;
 import com.pashkobohdan.fastreadinglite.library.bookTextWorker.Word;
 import com.pashkobohdan.fastreadinglite.library.ui.button.ButtonContinuesClickAction;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,7 +73,7 @@ public class CurrentBook extends AppCompatActivity {
     /**
      * Main object (activity works with it)
      */
-    private BookInfo bookInfo;
+    private DBBookDTO bookInfo;
 
     /**
      * UI elements (layouts and views)
@@ -149,22 +150,19 @@ public class CurrentBook extends AppCompatActivity {
         mDecorView = getWindow().getDecorView();
 
         // check bookInfo for cracks
-        if (!getBookInfo()) {
-            new AlertDialog.Builder(this)
-                    .setCancelable(false)
-                    .setTitle(R.string.error)
-                    .setMessage(R.string.book_loading_error)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> finish())
-                    .show();
+//        if (!
+        getBookInfo();
+//                ) {
+//            new AlertDialog.Builder(this)
+//                    .setCancelable(false)
+//                    .setTitle(R.string.error)
+//                    .setMessage(R.string.book_loading_error)
+//                    .setPositiveButton(R.string.ok, (dialog, which) -> finish())
+//                    .show();
+//
+//            return;
+//        }
 
-            return;
-        }
-
-        // actionBar changing
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(bookInfo.getName());
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
 
         InterstitialAd interstitialAd = new InterstitialAd(this);
@@ -195,7 +193,7 @@ public class CurrentBook extends AppCompatActivity {
 
             }
         });
-        long lastAdShowTime = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getLong("last_ad_show_time",0);
+        long lastAdShowTime = PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getLong("last_ad_show_time", 0);
         long miliseconds = System.currentTimeMillis() - lastAdShowTime;
         long seconds = miliseconds / 1000;
         long minutes = seconds / 60;
@@ -249,16 +247,14 @@ public class CurrentBook extends AppCompatActivity {
             public void onRewardedVideoAdFailedToLoad(int i) {
                 Toast.makeText(CurrentBook.this, "Ads loading error. Try later", Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onRewardedVideoCompleted() {
+
+            }
         });
         mAdRequest = new AdRequest.Builder()
                 .build();
-
-
-        bookInfo.setLastOpeningDate((int) (new Date().getTime() / 1000));
-
-        parseWords();
-
-        initializeStartReadingValues();
 
         initializeListeners();
 
@@ -428,7 +424,9 @@ public class CurrentBook extends AppCompatActivity {
         }
 
 
-        bookInfo.setCurrentWordNumber(readingPosition);
+        if(bookInfo!=null) {
+            bookInfo.setCurrentWordNumber(readingPosition);
+        }
         refreshStatus(ReadingStatus.STATUS_PAUSE);
     }
 
@@ -598,12 +596,43 @@ public class CurrentBook extends AppCompatActivity {
      * Business logic
      */
 
-    private boolean getBookInfo() {
+    private void getBookInfo() {
         Intent i = getIntent();
-        File bookFile = (File) i.getSerializableExtra(BOOK_INFO_EXTRA_NAME);
+        long bookId = i.getLongExtra(BOOK_INFO_EXTRA_NAME, -1);
 
-        bookInfo = BookInfosList.get(bookFile);
-        return bookInfo != null;
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                List<DBBookDTO> bookById = BookDAOHolder.getDatabase().getBookDAO().bookByIdList(bookId);
+                bookInfo = bookById == null || bookById.size() == 0 ? null : bookById.get(0);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+
+                if (bookInfo == null) {
+                    new AlertDialog.Builder(CurrentBook.this)
+                            .setCancelable(false)
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.book_loading_error)
+                            .setPositiveButton(R.string.ok, (dialog, which) -> finish())
+                            .show();
+                } else {
+                    bookInfo.setLastOpeningDate((int) (new Date().getTime() / 1000));
+
+                    parseWords();
+
+                    initializeStartReadingValues();
+                    // actionBar changing
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setTitle(bookInfo.getName());
+                        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    }
+                }
+            }
+        }.execute();
     }
 
 

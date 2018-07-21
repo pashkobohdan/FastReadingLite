@@ -1,6 +1,8 @@
 package com.pashkobohdan.fastreadinglite;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
@@ -15,18 +17,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfo;
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfoFactory;
+import com.pashkobohdan.fastreadinglite.data.database.BookDAOHolder;
+import com.pashkobohdan.fastreadinglite.data.database.InsertBookAsyncTask;
+import com.pashkobohdan.fastreadinglite.data.dto.DBBookDTO;
 import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfosList;
-import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.core.BookReadingResult;
 import com.pashkobohdan.fastreadinglite.library.firebase.downloadBooks.FirebaseBook;
 import com.pashkobohdan.fastreadinglite.library.ui.lists.downloadFirebaseBooks.FirebaseBooksListAdapter;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-
-import static com.pashkobohdan.fastreadinglite.library.fileSystem.file.InternalStorageFileHelper.INTERNAL_FILE_EXTENSION;
+import java.util.Random;
 
 public class Download extends AppCompatActivity {
 
@@ -64,9 +64,24 @@ public class Download extends AppCompatActivity {
          * Data check
          */
         if (BookInfosList.getAll().size() == 0) {
-            for (File file : getCacheDir().listFiles((directory, fileName) -> fileName.endsWith(INTERNAL_FILE_EXTENSION))) {
-                BookInfosList.add(BookInfoFactory.newInstance(file, this));
-            }
+//            for (File file : getCacheDir().listFiles((directory, fileName) -> fileName.endsWith(INTERNAL_FILE_EXTENSION))) {
+
+            new AsyncTask<Void, Void, Void>() {
+
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    for(DBBookDTO bookDTO : BookDAOHolder.getDatabase().getBookDAO().getAllBooks()) {
+                        BookInfosList.add(bookDTO);
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+                }
+            }.execute();
+//            }
         }
 
 
@@ -94,17 +109,28 @@ public class Download extends AppCompatActivity {
         listView.setOnItemClickListener((parent, view, position, id) -> {
             FirebaseBook book = booksToListView.get(position);
 
-            BookInfo newBookInfo = BookInfoFactory.createNewInstance(new BookReadingResult(book.getBookText(), book.getBookName(), book.getBookAuthor()), this);
-            if (newBookInfo == null) {
-                Toast.makeText(this, R.string.file_writing_error, Toast.LENGTH_SHORT).show();
-                return;
-            }
+            Random random = new Random(System.nanoTime());
+            int color = Color.argb(255, random.nextInt(127) + 127, random.nextInt(127) + 127, random.nextInt(127) + 127);
+            DBBookDTO newBookInfo = new DBBookDTO(book.getBookText(),
+                    book.getBookName(),
+                    book.getBookAuthor(),
+                    color,
+                    0,
+                    260,
+                    0,
+                    false);
+//            BookInfo newBookInfo = BookInfoFactory.createNewInstance(new BookReadingResult(book.getBookText(), book.getBookName(), book.getBookAuthor()), this);
+//            if (newBookInfo == null) {
+//                Toast.makeText(this, R.string.file_writing_error, Toast.LENGTH_SHORT).show();
+//                return;
+//            }
 
-            BookInfosList.getAll().add(newBookInfo);
-            Toast.makeText(this, R.string.book_write_success, Toast.LENGTH_SHORT).show();
-
-            books.remove(book);
-            refreshBooksList();
+            new InsertBookAsyncTask(()->{;
+                Toast.makeText(this, R.string.book_write_success, Toast.LENGTH_SHORT).show();
+                books.remove(book);
+                refreshBooksList();
+            }, newBookInfo).execute();
+//            BookInfosList.getAll().add(newBookInfo)
         });
 
         ProgressDialog booksLoadingProgressDialog = new ProgressDialog(this);
@@ -126,11 +152,11 @@ public class Download extends AppCompatActivity {
                     if (!books.contains(book)) {
 
                         boolean isExist = false;
-                        for (BookInfo bookInfo : BookInfosList.getAll()) {
+                        for (DBBookDTO bookInfo : BookInfosList.getAll()) {
 
                             if (book.getBookName().equals(bookInfo.getName())
                                     && book.getBookAuthor().equals(bookInfo.getAuthor())
-                                    && book.getBookText().equals(bookInfo.getAllText())) {
+                                    && book.getBookText().equals(bookInfo.getText())) {
                                 isExist = true;
                                 break;
                             }

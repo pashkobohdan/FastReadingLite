@@ -3,16 +3,18 @@ package com.pashkobohdan.fastreadinglite.library.ui.dialogs;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
 import com.pashkobohdan.fastreadinglite.R;
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfo;
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfoFactory;
+import com.pashkobohdan.fastreadinglite.data.dto.DBBookDTO;
 import com.pashkobohdan.fastreadinglite.library.fileSystem.newFileOpening.core.BookReadingResult;
 import com.pashkobohdan.fastreadinglite.library.ui.lists.booksList.BookEventListener;
+
+import java.util.Random;
 
 
 /**
@@ -91,20 +93,30 @@ public class BookAddDialog {
             if (name.length() > 0 && author.length() > 0 && text.length() > 0) {
                 BookReadingResult bookReadingResult = new BookReadingResult(text, name, author);
 
-                BookInfo bookInfo = BookInfoFactory.createNewInstance(bookReadingResult, activity);
-                if(bookInfo != null){
-                    successEdit.run(bookInfo);
-                    return true;
-                }else{
-                    new AlertDialog.Builder(activity)
-                            .setPositiveButton(R.string.ok, (dialog, which) -> {
-                            })
-                            .setTitle(R.string.error)
-                            .setMessage(R.string.book_write_error)
-                            .create()
-                            .show();
-                }
-            }else{
+                Random random = new Random(System.nanoTime());
+                int color = Color.argb(255, random.nextInt(127) + 127, random.nextInt(127) + 127, random.nextInt(127) + 127);
+                DBBookDTO newBookInfo = new DBBookDTO(bookReadingResult.getBookText(),
+                        bookReadingResult.getBookName(),
+                        bookReadingResult.getBookAuthor(),
+                        color,
+                        0,
+                        260,
+                        0,
+                        false);
+//                BookInfo bookInfo = BookInfoFactory.createNewInstance(bookReadingResult, activity);
+//                if(newBookInfo != null){
+                successEdit.run(newBookInfo);
+                return true;
+//                }else{
+//                    new AlertDialog.Builder(activity)
+//                            .setPositiveButton(R.string.ok, (dialog, which) -> {
+//                            })
+//                            .setTitle(R.string.error)
+//                            .setMessage(R.string.book_write_error)
+//                            .create()
+//                            .show();
+//                }
+            } else {
                 new AlertDialog.Builder(activity)
                         .setPositiveButton(R.string.ok, (dialog, which) -> {
                         })

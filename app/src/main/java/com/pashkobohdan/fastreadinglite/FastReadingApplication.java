@@ -3,6 +3,7 @@ package com.pashkobohdan.fastreadinglite;
 import android.app.Application;
 
 import com.google.android.gms.ads.MobileAds;
+import com.pashkobohdan.fastreadinglite.data.database.BookDAOHolder;
 
 /**
  * Created by bohdan on 06.08.17.
@@ -14,7 +15,7 @@ public class FastReadingApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        BookDAOHolder.init(getApplicationContext());
         MobileAds.initialize(this, ADMOB_APP_ID );
     }
 }

@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
     repositories {
         flatDir {
             dirs "libs"
@@ -12,15 +12,15 @@ android {
     defaultConfig {
         applicationId "com.pashkobohdan.fastreadinglite"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 15
         versionName "1.4.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
 
-        jackOptions {
-            enabled true
-        }
+//        jackOptions {
+//            enabled true
+//        }
         multiDexEnabled true
     }
     buildTypes {
@@ -53,24 +53,32 @@ dependencies {
     compile 'com.android.support:design:25.3.1'
     compile 'com.itextpdf:itextg:5.5.10'
     compile 'ir.sohreco.androidfilechooser:android-file-chooser:1.1.0'
-    compile 'com.daimajia.swipelayout:library:1.2.0@aar'
+
+    compile 'com.android.support:recyclerview-v7:27.1.1'
+    compile 'com.android.support:support-v4:27.1.1'
+    compile "com.daimajia.swipelayout:library:1.2.0@aar"
+
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'com.jrummyapps:colorpicker:2.0.5'
     compile 'com.morsebyte.shailesh.twostagerating:TwoStageRate:2.0'
     compile 'honuapps:aloha:0.9.0'
 
-    compile 'com.google.firebase:firebase-core:11.0.1'
-    compile 'com.google.firebase:firebase-ads:11.0.1'
-    compile 'com.google.firebase:firebase-database:11.0.1'
-    compile 'com.google.firebase:firebase-auth:11.0.1'
-    compile 'com.google.android.gms:play-services-auth:11.0.1'
+    compile 'com.google.firebase:firebase-core:16.0.1'
+    compile 'com.google.firebase:firebase-ads:15.0.1'
+    compile 'com.google.firebase:firebase-database:16.0.1'
+    compile 'com.google.firebase:firebase-auth:16.0.2'
+    compile 'com.google.android.gms:play-services-auth:15.0.1'
 
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:multidex:1.0.0'
+    compile 'com.android.support:multidex:1.0.3'
 
-    compile 'com.folioreader:folioreader:0.3.1'
+    compile 'com.folioreader:folioreader:0.4.0'
 
+    def room_version = "1.1.1"
+
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 
     compile 'ru.apperate:ads@aar'
 

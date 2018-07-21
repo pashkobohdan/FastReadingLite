@@ -1,6 +1,6 @@
 package com.pashkobohdan.fastreadinglite.library.ui.lists.booksList;
 
-import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfo;
+import com.pashkobohdan.fastreadinglite.data.dto.DBBookDTO;
 
 /**
  * Interface (can be used as Lambda expression) definition for a callback
@@ -11,6 +11,6 @@ import com.pashkobohdan.fastreadinglite.library.bookTextWorker.BookInfo;
 
 public interface BookConfirmationEventListener {
 
-    void run(BookInfo bookInfo, Runnable runIfConfirmed);
+    void run(DBBookDTO bookInfo, Runnable runIfConfirmed);
 
 }
