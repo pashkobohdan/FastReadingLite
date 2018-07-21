@@ -170,5 +170,6 @@
     <string name="help">Ayuda</string>
     <string name="read_up_to_2k_pro">Puedes leer hasta 2000 palabras por minuto en la versión PRO</string>
     <string name="i_cant_buy_pro">No puedo comprar la PRO</string>
+    <string name="tts_reading_confirm">Вы можете слушать ваши книги с технологией TTS (текст в речь). Попробовать бесплатно сейчас ?</string>
 
 </resources>

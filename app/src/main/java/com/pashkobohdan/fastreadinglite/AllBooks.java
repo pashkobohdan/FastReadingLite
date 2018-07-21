@@ -156,6 +156,7 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
             initBookInfoData();
         }
 
+
         if (booksAdapter == null) {
             initBooksListAdapter();
         }

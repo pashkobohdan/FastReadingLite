@@ -88,7 +88,7 @@ public class CurrentBook extends AppCompatActivity {
     //private TextView currentSpeed;
     private TextView newSpeedOnPlaying;
 
-    private ImageButton positionForwardBack, positionBack, positionUp, positionForwardUp, speedPlus, speedMinus;
+    private ImageButton positionForwardBack, positionBack, positionUp, positionForwardUp, speedPlus, speedMinus, ttsReading;
 
     /**
      * Reading help objects
@@ -289,6 +289,7 @@ public class CurrentBook extends AppCompatActivity {
         positionForwardBack = (ImageButton) findViewById(R.id.current_book_speed_forward_back);
         positionBack = (ImageButton) findViewById(R.id.current_book_speed_back);
         positionUp = (ImageButton) findViewById(R.id.current_book_speed_up);
+        ttsReading = (ImageButton) findViewById(R.id.current_book_tts_reading);
         positionForwardUp = (ImageButton) findViewById(R.id.current_book_speed_forward_up);
 
         speedPlus = (ImageButton) findViewById(R.id.current_book_speed_plus);
@@ -671,6 +672,9 @@ public class CurrentBook extends AppCompatActivity {
                 setReadingPosition(getReadingPosition() ==
                         bookInfo.getWords().length - 1 ? bookInfo.getWords().length - 1 : getReadingPosition() + 1), REWIND_WORD_DELAY);
 
+        ttsReading.setOnClickListener(v -> {
+            showTtsAppDialog();
+        });
         ButtonContinuesClickAction.setContinuesClickAction(positionForwardUp, () -> {
             int position;
             for (position = readingPosition + 1; position < bookInfo.getWords().length; position++) {
@@ -714,6 +718,33 @@ public class CurrentBook extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void showTtsAppDialog() {
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(CurrentBook.this);
+        builder1.setMessage(R.string.tts_reading_confirm);
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                getString(R.string.yes),
+                (dialog, id) -> openTtsReadingApp());
+
+        builder1.setNegativeButton(
+                getString(R.string.no),
+                (dialog, id) -> dialog.cancel());
+
+        AlertDialog alert = builder1.create();
+        alert.show();
+
+    }
+
+    private void openTtsReadingApp() {
+        final String appPackageName = "com.pashkobohdan.ttsreader.free";
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+        } catch (android.content.ActivityNotFoundException anfe) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+        }
     }
 
     private void initializeTimerTask() {
