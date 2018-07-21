@@ -622,25 +622,11 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
             return;//Нечего мигрировать / установка после нее
         }
 
+        ProgressDialog pd = ProgressDialog.show(this, getString(R.string.reading_dialog_title),
+                getString(R.string.migrating_dialog_text), true, false);
         new AsyncTask<Void, Void, Void>() {
 
             int currentIndex = 0;
-            ProgressDialog pd;
-
-            @Override
-            protected void onPreExecute() {
-                runOnUiThread(() -> {
-                    pd = new ProgressDialog(AllBooks.this);
-                    pd.setTitle(getString(R.string.reading_dialog_title));
-                    pd.setMessage(getString(R.string.migrating_dialog_text));
-                    pd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                    pd.setMax(100);
-                    pd.setProgress(0);
-                    pd.setIndeterminate(true);
-                    pd.setCancelable(false);
-                    pd.show();
-                });
-            }
 
             @Override
             protected Void doInBackground(Void... voids) {
@@ -649,11 +635,6 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
             }
 
             private void copyNextBook() {
-                runOnUiThread(() -> {
-                    double progress = 100.0 * (double) currentIndex / (double) bookInfos.size();
-                    pd.setIndeterminate(false);
-                    pd.setProgress((int) progress);
-                });
 
                 if (currentIndex == bookInfos.size() - 1) {
                     return;
@@ -681,8 +662,8 @@ public class AllBooks extends AppCompatActivity implements FileChooserDialog.Cho
             protected void onPostExecute(Void aVoid) {
                 runOnUiThread(() -> {
                     pd.dismiss();
+                    refreshBookFromDB();
                 });
-                refreshBookFromDB();
                 super.onPostExecute(aVoid);
             }
         }.execute();
